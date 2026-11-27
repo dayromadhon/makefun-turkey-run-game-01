@@ -5,7 +5,7 @@
 // stands in for /output:
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
-import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
@@ -13,8 +13,8 @@ import { buildDossier } from './vendor/makefun-game.ts';
 const here = fileURLToPath(new URL('.', import.meta.url));
 const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
-// Start from an empty output directory so a stale file can never sneak in.
-rmSync(outDir, { recursive: true, force: true });
+// The grader's output directory is a mounted volume, so never delete it
+// (rmSync on a mount point throws EBUSY); just create it if missing.
 mkdirSync(outDir, { recursive: true });
 
 cpSync(join(here, 'game'), join(outDir, 'game'), { recursive: true });
